@@ -14,8 +14,6 @@ target/
 *.project
 *.classpath
 
-# Secrets — NEVER commit these
-src/main/resources/application.properties
 
 # OS
 .DS_Store
