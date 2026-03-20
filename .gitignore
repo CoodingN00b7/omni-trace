@@ -1,0 +1,22 @@
+nano ~/Desktop/omni-trace/.gitignore
+```
+Paste this:
+```
+# Maven
+target/
+*.class
+*.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.project
+*.classpath
+
+# Secrets — NEVER commit these
+src/main/resources/application.properties
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>OmniTrace &mdash; PII Scanner</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">
+            <div class="brand-icon">&#128737;</div>
+            <span class="brand-name">OmniTrace</span>
+        </div>
+        <div class="brand-sub">Digital Footprint Analyzer</div>
+    </div>
+    <nav>
+        <div class="nav-section">Main</div>
+        <a th:href="@{/}">               <span class="nav-icon">&#9993;</span> Email Checker</a>
+        <a th:href="@{/dashboard}">      <span class="nav-icon">&#9632;</span> Dashboard</a>
+        <div class="nav-section">Tools</div>
+        <a th:href="@{/scanner}" class="active"><span class="nav-icon">&#128269;</span> PII Scanner</a>
+        <a th:href="@{/records}">        <span class="nav-icon">&#128190;</span> Records</a>
+    </nav>
+    <div class="sidebar-footer">
+        <p>Status: <span>&#9679; Online</span></p>
+    </div>
+</aside>
+
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-title">
+            <h2>PII Scanner</h2>
+            <p>Detect emails, phones, Aadhaar, PAN, IPs and more</p>
+        </div>
+    </div>
+
+    <div class="content" style="max-width:860px">
+
+        <!-- Pattern guide -->
+        <div class="card" style="margin-bottom:20px">
+            <div class="card-body" style="padding:16px 20px">
+                <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+                    <span style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-right:4px">Detects:</span>
+                    <span class="badge badge-type">EMAIL</span>
+                    <span class="badge badge-type">PHONE</span>
+                    <span class="badge badge-type" style="color:var(--red);border-color:rgba(239,68,68,0.3)">AADHAAR</span>
+                    <span class="badge badge-type" style="color:var(--red);border-color:rgba(239,68,68,0.3)">PAN</span>
+                    <span class="badge badge-type">IPV4</span>
+                    <span class="badge badge-type">IPV6</span>
+                    <span class="badge badge-type">URL</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" id="tab-file" onclick="switchTab('file')">&#128196; File Upload</button>
+            <button class="tab"        id="tab-text" onclick="switchTab('text')">&#128221; Paste Text</button>
+        </div>
+
+        <div id="pane-file">
+            <div class="card" style="margin-bottom:20px">
+                <div class="card-body">
+                    <div class="dropzone" id="dropzone">
+                        <div class="dz-icon">&#128228;</div>
+                        <div class="dz-title">Drop your file here</div>
+                        <div class="dz-sub">or click to browse &mdash; supports .txt .log .csv .json .sql</div>
+                    </div>
+                    <input type="file" id="fileInput" hidden/>
+                </div>
+            </div>
+        </div>
+
+        <div id="pane-text" style="display:none">
+            <div class="card" style="margin-bottom:20px">
+                <div class="card-body">
+                    <textarea class="input" id="scanText" rows="12"
+                        placeholder="Paste logs, database dumps, config files or any text...&#10;&#10;Example:&#10;User: rahul.sharma@gmail.com&#10;Phone: +919876543210&#10;Aadhaar: 2345 6789 0123&#10;PAN: ABCDE1234F&#10;IP: 192.168.1.105"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" id="scanBtn" onclick="runScan()">
+            &#128269; Run Scan
+        </button>
+
+        <div id="scanResult"></div>
+    </div>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

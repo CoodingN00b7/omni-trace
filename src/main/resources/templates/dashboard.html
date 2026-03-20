@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>OmniTrace &mdash; Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">
+            <div class="brand-icon">&#128737;</div>
+            <span class="brand-name">OmniTrace</span>
+        </div>
+        <div class="brand-sub">Digital Footprint Analyzer</div>
+    </div>
+    <nav>
+        <div class="nav-section">Main</div>
+        <a th:href="@{/}">              <span class="nav-icon">&#9993;</span> Email Checker</a>
+        <a th:href="@{/dashboard}" class="active"><span class="nav-icon">&#9632;</span> Dashboard</a>
+        <div class="nav-section">Tools</div>
+        <a th:href="@{/scanner}">       <span class="nav-icon">&#128269;</span> PII Scanner</a>
+        <a th:href="@{/records}">       <span class="nav-icon">&#128190;</span> Records</a>
+    </nav>
+    <div class="sidebar-footer">
+        <p>Status: <span>&#9679; Online</span></p>
+    </div>
+</aside>
+
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-title">
+            <h2>Dashboard</h2>
+            <p>PII findings overview</p>
+        </div>
+        <div class="topbar-actions">
+            <a th:href="@{/scanner}" class="btn btn-primary btn-sm">&#43; New Scan</a>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Stat cards -->
+        <div class="stat-grid">
+            <div class="stat-card indigo">
+                <div class="stat-header">
+                    <span class="stat-label">Total Findings</span>
+                    <div class="stat-icon indigo">&#128202;</div>
+                </div>
+                <div class="stat-value" th:data-target="${total}" th:text="${total}">0</div>
+                <div class="stat-sub">Across all scanned sources</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-header">
+                    <span class="stat-label">High-Risk Flagged</span>
+                    <div class="stat-icon red">&#9888;</div>
+                </div>
+                <div class="stat-value" th:data-target="${flagged}" th:text="${flagged}">0</div>
+                <div class="stat-sub">Score &ge; 8 (Aadhaar, PAN)</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-header">
+                    <span class="stat-label">Safe Records</span>
+                    <div class="stat-icon green">&#10003;</div>
+                </div>
+                <div class="stat-value" th:data-target="${total - flagged}" th:text="${total - flagged}">0</div>
+                <div class="stat-sub">Low to medium risk</div>
+            </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="grid-2" style="margin-bottom:20px">
+
+            <!-- Breakdown bar chart -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">&#128202; Findings by type</span>
+                    <span style="font-size:12px;color:var(--text3)"
+                          th:text="${total} + ' total'">0 total</span>
+                </div>
+                <div class="card-body">
+                    <div th:if="${breakdown.isEmpty()}" class="empty">
+                        <div class="empty-icon">&#128202;</div>
+                        <div class="empty-title">No data yet</div>
+                        <div class="empty-sub">Run a scan to see results here</div>
+                    </div>
+                    <div class="breakdown-list" th:unless="${breakdown.isEmpty()}">
+                        <div class="breakdown-item" th:each="e : ${breakdown}">
+                            <span class="breakdown-type" th:text="${e.key}">TYPE</span>
+                            <div class="breakdown-bar-bg">
+                                <div class="breakdown-bar"
+                                     th:classappend="${e.key.toLowerCase()}"
+                                     th:data-width="${e.value * 100 / total}"
+                                     style="width:0%"></div>
+                            </div>
+                            <span class="breakdown-count" th:text="${e.value}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent high-risk -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">&#128680; Recent high-risk</span>
+                    <a th:href="@{/records}" style="font-size:12px;color:var(--indigo2);text-decoration:none">View all &rarr;</a>
+                </div>
+                <div class="card-body" style="padding:0 20px">
+                    <div th:if="${recentFlagged.isEmpty()}" class="empty" style="padding:30px 0">
+                        <div class="empty-icon">&#128737;</div>
+                        <div class="empty-title">No high-risk findings</div>
+                    </div>
+                    <div class="finding-item" th:each="f : ${recentFlagged}">
+                        <div class="finding-dot high"></div>
+                        <div class="finding-meta">
+                            <div class="finding-value" th:text="${f.maskedValue}">—</div>
+                            <div class="finding-source">
+                                <span class="badge badge-type" th:text="${f.dataType}">—</span>
+                                &nbsp;
+                                <span th:text="${#strings.contains(f.sourceFile,'/') ?
+                                    #strings.substringAfterLast(f.sourceFile,'/') : f.sourceFile}">—</span>
+                            </div>
+                        </div>
+                        <span class="badge badge-high">
+                            <span th:text="${f.riskScore}">0</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Type breakdown detail cards -->
+        <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+                <span class="card-title">&#128203; Risk breakdown by type</span>
+            </div>
+            <div class="card-body">
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px" th:if="${not breakdown.isEmpty()}">
+                    <div th:each="e : ${breakdown}"
+                         style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px">
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:8px"
+                             th:text="${e.key}">TYPE</div>
+                        <div style="font-size:24px;font-weight:700;color:var(--text)"
+                             th:text="${e.value}">0</div>
+                        <div style="font-size:11px;color:var(--text3);margin-top:4px"
+                             th:text="${e.value * 100 / total} + '%'">0%</div>
+                    </div>
+                </div>
+                <div th:if="${breakdown.isEmpty()}" class="empty" style="padding:20px 0">
+                    <div class="empty-sub">Run a scan to populate this section</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick action -->
+        <div class="card" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(99,102,241,0.02))">
+            <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px">
+                <div>
+                    <div style="font-weight:600;color:var(--text);font-size:15px;margin-bottom:4px">Ready to scan for PII?</div>
+                    <div style="font-size:13px;color:var(--text3)">Upload a log file or paste text to detect sensitive data leaks</div>
+                </div>
+                <a th:href="@{/scanner}" class="btn btn-primary">&#128269; Launch Scanner &rarr;</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+spring.datasource.url=jdbc:mysql://localhost:3306/omnitrace?useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=YOUR_MYSQL_PASSWORD_HERE
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.thymeleaf.cache=false
+server.port=8080
+leakcheck.api.key=YOUR_LEAKCHECK_KEY_HERE
+app.seed.data=true
