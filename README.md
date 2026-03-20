@@ -69,7 +69,7 @@
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/omni-trace.git
+git clone https://github.com/CoodingN00b7/omni-trace.git
 cd omni-trace
 ```
 
